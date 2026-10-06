@@ -1,3 +1,3 @@
-export function oxlintUtils(): never {
-  throw new Error('Not implemented yet')
-}
+export type { GetRulesOptions, OxlintCategory, OxlintRule } from './getRules/index.ts'
+export { getRules } from './getRules/index.ts'
+export { getRulesByCategory } from './getRulesByCategory/index.ts'
