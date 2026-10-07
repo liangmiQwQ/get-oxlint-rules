@@ -13,15 +13,15 @@ const rules = await getRulesByCategory('correctness')
 const all = await getRules()
 ```
 
-The first call runs the `oxlint` binary resolved from your project (or from `PATH`). The result is cached in `node_modules/.cache/oxlint-utils`, keyed by the Oxlint version, so later calls read from disk instead.
+The first call runs the `oxlint` package installed next to this one, so it works from any working directory. In a Vite+ project without a direct `oxlint` dependency, the copy bundled by `vite-plus` is used. If no package is found, `oxlint` on `PATH` is used. The result is cached in `node_modules/.cache/oxlint-utils`, keyed by the Oxlint version, so later calls read from disk instead.
 
 Options:
 
-| Option     | Description                                                                  |
-| ---------- | ---------------------------------------------------------------------------- |
-| `cwd`      | Directory to resolve the `oxlint` package from. Defaults to `process.cwd()`. |
-| `bin`      | Path to an oxlint executable, skipping package resolution.                   |
-| `cacheDir` | Directory for cached data.                                                   |
+| Option     | Description                                                      |
+| ---------- | ---------------------------------------------------------------- |
+| `cwd`      | Extra directory to resolve `oxlint` (or `vite-plus`) from first. |
+| `bin`      | Path to an oxlint executable, skipping package resolution.       |
+| `cacheDir` | Directory for cached data.                                       |
 
 ## License
 
