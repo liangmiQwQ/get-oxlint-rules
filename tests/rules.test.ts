@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readdir, realpath, symlink, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readdir, readFile, realpath, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -28,4 +28,25 @@ it('falls back to the oxlint bundled by vite-plus when the project has no oxlint
 
   expect(rules.length).toBeGreaterThan(0)
   expect(await readdir(join(project, '.cache'))).toEqual([`rules-${versions.oxlint}.json`])
+})
+
+it('runs oxlint once for concurrent calls', async () => {
+  // A fake oxlint package that records every `--rules` run in a log file.
+  const project = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-fake-'))
+  const oxlint = join(project, 'node_modules/oxlint')
+  const log = join(project, 'runs.log')
+  await mkdir(oxlint, { recursive: true })
+  await writeFile(
+    join(oxlint, 'package.json'),
+    JSON.stringify({ version: '0.0.0-fake', bin: { oxlint: 'cli.js' } })
+  )
+  await writeFile(
+    join(oxlint, 'cli.js'),
+    `require('node:fs').appendFileSync(${JSON.stringify(log)}, 'run\\n'); console.log('[]')`
+  )
+  const options = { cwd: project, cacheDir: join(project, '.cache') }
+
+  await Promise.all([getRules(options), getRules(options)])
+
+  expect(await readFile(log, 'utf8')).toBe('run\n')
 })

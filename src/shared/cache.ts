@@ -4,7 +4,8 @@ import { dirname, join } from 'node:path'
 
 import findCacheDirectory from 'find-cache-dir'
 
-const memory = new Map<string, unknown>()
+// Holds promises, not values, so concurrent calls share one load instead of each running oxlint.
+const memory = new Map<string, Promise<unknown>>()
 
 export interface CacheOptions {
   cwd?: string
@@ -18,13 +19,19 @@ export async function cached<T>(
   load: () => Promise<T>
 ): Promise<T> {
   if (memory.has(key)) {
-    return memory.get(key) as T
+    return memory.get(key) as Promise<T>
   }
 
   const file = join(resolveCacheDir(options), `${key}.json`)
-  const value = (await readJson<T>(file)) ?? (await loadAndWrite(file, load))
+  const value = readOrLoad(file, load)
   memory.set(key, value)
+  // Forget failed loads so the next call can retry, as before.
+  value.catch(() => memory.delete(key))
   return value
+}
+
+async function readOrLoad<T>(file: string, load: () => Promise<T>): Promise<T> {
+  return (await readJson<T>(file)) ?? (await loadAndWrite(file, load))
 }
 
 function resolveCacheDir(options: CacheOptions): string {
