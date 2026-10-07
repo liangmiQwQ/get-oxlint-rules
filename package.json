@@ -1,16 +1,16 @@
 {
-  "name": "oxlint-utils",
+  "name": "get-oxlint-rules",
   "version": "0.0.0",
   "description": "Useful utils for Oxlint.",
-  "homepage": "https://github.com/liangmiQwQ/oxlint-utils#readme",
+  "homepage": "https://github.com/liangmiQwQ/get-oxlint-rules#readme",
   "bugs": {
-    "url": "https://github.com/liangmiQwQ/oxlint-utils/issues"
+    "url": "https://github.com/liangmiQwQ/get-oxlint-rules/issues"
   },
   "license": "MIT",
   "author": "Liang Mi <hi@liangmi.dev>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liangmiQwQ/oxlint-utils.git"
+    "url": "git+https://github.com/liangmiQwQ/get-oxlint-rules.git"
   },
   "files": [
     "dist"

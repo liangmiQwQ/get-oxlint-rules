@@ -41,7 +41,7 @@ export async function runOxlint(
   args: string[]
 ): Promise<string> {
   // Oxlint scans the working directory for nested configs even for `--rules`, which never finishes from a large directory, so run it in an empty one.
-  const cwd = await mkdtemp(join(tmpdir(), 'oxlint-utils-'))
+  const cwd = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-'))
   try {
     const result = await x(binary.command, [...binary.args, ...args], {
       throwOnError: true,

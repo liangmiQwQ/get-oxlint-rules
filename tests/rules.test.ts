@@ -7,7 +7,7 @@ import { expect, it } from 'vite-plus/test'
 import { getRules, getRulesByCategory } from '../src/index.ts'
 
 it('lists correctness rules from the local oxlint and caches them on disk', async () => {
-  const cacheDir = await mkdtemp(join(tmpdir(), 'oxlint-utils-'))
+  const cacheDir = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-'))
 
   const rules = await getRulesByCategory('correctness', { cacheDir })
 
@@ -18,7 +18,7 @@ it('lists correctness rules from the local oxlint and caches them on disk', asyn
 
 it('falls back to the oxlint bundled by vite-plus when the project has no oxlint', async () => {
   // A project that depends on vite-plus only, so `oxlint` is unreachable from its root.
-  const project = await mkdtemp(join(tmpdir(), 'oxlint-utils-vp-'))
+  const project = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-vp-'))
   await mkdir(join(project, 'node_modules'))
   await writeFile(join(project, 'package.json'), '{}')
   await symlink(await realpath('node_modules/vite-plus'), join(project, 'node_modules/vite-plus'))

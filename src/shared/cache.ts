@@ -8,7 +8,7 @@ const memory = new Map<string, unknown>()
 
 export interface CacheOptions {
   cwd?: string
-  /** Directory for cached data. Defaults to `node_modules/.cache/oxlint-utils`. */
+  /** Directory for cached data. Defaults to `node_modules/.cache/get-oxlint-rules`. */
   cacheDir?: string
 }
 
@@ -33,7 +33,8 @@ function resolveCacheDir(options: CacheOptions): string {
   }
   // `find-cache-dir` returns undefined without a package.json or a writable node_modules, so fall back to the OS temp dir.
   return (
-    findCacheDirectory({ name: 'oxlint-utils', cwd: options.cwd }) ?? join(tmpdir(), 'oxlint-utils')
+    findCacheDirectory({ name: 'get-oxlint-rules', cwd: options.cwd }) ??
+    join(tmpdir(), 'get-oxlint-rules')
   )
 }
 

@@ -1,4 +1,4 @@
-# oxlint-utils Agent Guide
+# get-oxlint-rules Agent Guide
 
 Useful utils for Oxlint, for developers working with Oxlint.
 
