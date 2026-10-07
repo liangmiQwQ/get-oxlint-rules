@@ -25,7 +25,7 @@ export async function resolveOxlint(options: ResolveOxlintOptions = {}): Promise
   if (options.bin) {
     return resolveExecutable(options.bin)
   }
-  // Resolving from this file finds the user's oxlint wherever the process started, as long as `oxlint` is our peer dependency.
+  // Resolving from this file finds the user's oxlint wherever the process started, instead of depending on `process.cwd()`.
   const bases = options.cwd ? [options.cwd, import.meta.dirname] : [import.meta.dirname]
   for (const base of bases) {
     const manifestPath = findOxlintManifest(base)
