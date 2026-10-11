@@ -5,12 +5,15 @@ Useful utils for Oxlint.
 ## Usage
 
 ```ts
-import { getRules, getRulesByCategory } from 'get-oxlint-rules'
+import { getOxlintPlugins, getRules, getRulesByCategory } from 'get-oxlint-rules'
 
 const rules = await getRulesByCategory('correctness')
 // [{ scope: 'eslint', value: 'no-debugger', category: 'correctness', ... }]
 
 const all = await getRules()
+
+const plugins = await getOxlintPlugins()
+// ['eslint', 'import', 'jest', 'jsdoc', 'jsx-a11y', ...]
 ```
 
 The first call runs the `oxlint` package installed next to this one, so it works from any working directory. In a Vite+ project without a direct `oxlint` dependency, the copy bundled by `vite-plus` is used. If no package is found, `oxlint` on `PATH` is used. The result is cached in `node_modules/.cache/get-oxlint-rules`, keyed by the Oxlint version, so later calls read from disk instead.

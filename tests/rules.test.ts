@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { expect, it } from 'vite-plus/test'
 
-import { getRules, getRulesByCategory } from '../src/index.ts'
+import { getOxlintPlugins, getRules, getRulesByCategory } from '../src/index.ts'
 
 it('lists correctness rules from the local oxlint and caches them on disk', async () => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-'))
@@ -28,4 +28,14 @@ it('falls back to the oxlint bundled by vite-plus when the project has no oxlint
 
   expect(rules.length).toBeGreaterThan(0)
   expect(await readdir(join(project, '.cache'))).toEqual([`rules-${versions.oxlint}.json`])
+})
+
+it('lists built-in plugins with the names used in the `plugins` config field', async () => {
+  const cacheDir = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-'))
+
+  const plugins = await getOxlintPlugins({ cacheDir })
+
+  expect(plugins).toContain('eslint')
+  expect(plugins).toContain('jsx-a11y')
+  expect(new Set(plugins).size).toBe(plugins.length)
 })
