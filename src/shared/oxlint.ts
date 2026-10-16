@@ -16,6 +16,8 @@ export interface ResolveOxlintOptions {
   cwd?: string
   /** Path to an oxlint executable. Skips package resolution when set. */
   bin?: string
+  /** Package whose own `oxlint` dependency is used, like `vite-plus`. Nothing else is tried. */
+  via?: string
 }
 
 // Packages that depend on `oxlint` themselves, so their copy can be reached through them under pnpm's strict layout.
@@ -28,10 +30,14 @@ export async function resolveOxlint(options: ResolveOxlintOptions = {}): Promise
   // Resolving from this file finds the user's oxlint wherever the process started, instead of depending on `process.cwd()`.
   const bases = options.cwd ? [options.cwd, import.meta.dirname] : [import.meta.dirname]
   for (const base of bases) {
-    const manifestPath = findOxlintManifest(base)
+    const manifestPath = options.via ? resolveViaHost(base, options.via) : findOxlintManifest(base)
     if (manifestPath) {
       return readOxlintPackage(manifestPath)
     }
+  }
+  // `oxlint` on PATH can be another version than the one `via` runs, so fail instead of falling back to it.
+  if (options.via) {
+    throw new Error(`Cannot find oxlint through "${options.via}" from ${bases.join(', ')}.`)
   }
   return resolveExecutable('oxlint')
 }
@@ -59,13 +65,17 @@ function findOxlintManifest(base: string): string | undefined {
     return direct
   }
   for (const host of HOST_PACKAGES) {
-    const hostManifest = resolveManifest(base, host)
-    const viaHost = hostManifest && resolveManifest(dirname(hostManifest), 'oxlint')
+    const viaHost = resolveViaHost(base, host)
     if (viaHost) {
       return viaHost
     }
   }
   return undefined
+}
+
+function resolveViaHost(base: string, host: string): string | undefined {
+  const hostManifest = resolveManifest(base, host)
+  return hostManifest && resolveManifest(dirname(hostManifest), 'oxlint')
 }
 
 function resolveManifest(base: string, name: string): string | undefined {

@@ -20,11 +20,12 @@ The first call runs the `oxlint` package installed next to this one, so it works
 
 Options:
 
-| Option     | Description                                                      |
-| ---------- | ---------------------------------------------------------------- |
-| `cwd`      | Extra directory to resolve `oxlint` (or `vite-plus`) from first. |
-| `bin`      | Path to an oxlint executable, skipping package resolution.       |
-| `cacheDir` | Directory for cached data.                                       |
+| Option     | Description                                                                                           |
+| ---------- | ----------------------------------------------------------------------------------------------------- |
+| `cwd`      | Extra directory to resolve `oxlint` (or `vite-plus`) from first.                                      |
+| `bin`      | Path to an oxlint executable, skipping package resolution.                                            |
+| `via`      | Only use the `oxlint` that this package depends on, like `vite-plus`. Throws instead of falling back. |
+| `cacheDir` | Directory for cached data.                                                                            |
 
 ## License
 
