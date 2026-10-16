@@ -30,7 +30,9 @@ export async function resolveOxlint(options: ResolveOxlintOptions = {}): Promise
   // Resolving from this file finds the user's oxlint wherever the process started, instead of depending on `process.cwd()`.
   const bases = options.cwd ? [options.cwd, import.meta.dirname] : [import.meta.dirname]
   for (const base of bases) {
-    const manifestPath = options.via ? resolveViaHost(base, options.via) : findOxlintManifest(base)
+    const manifestPath = options.via
+      ? await resolveViaHost(base, options.via)
+      : await findOxlintManifest(base)
     if (manifestPath) {
       return readOxlintPackage(manifestPath)
     }
@@ -59,13 +61,13 @@ export async function runOxlint(
   }
 }
 
-function findOxlintManifest(base: string): string | undefined {
+async function findOxlintManifest(base: string): Promise<string | undefined> {
   const direct = resolveManifest(base, 'oxlint')
   if (direct) {
     return direct
   }
   for (const host of HOST_PACKAGES) {
-    const viaHost = resolveViaHost(base, host)
+    const viaHost = await resolveViaHost(base, host)
     if (viaHost) {
       return viaHost
     }
@@ -73,9 +75,25 @@ function findOxlintManifest(base: string): string | undefined {
   return undefined
 }
 
-function resolveViaHost(base: string, host: string): string | undefined {
+async function resolveViaHost(base: string, host: string): Promise<string | undefined> {
   const hostManifest = resolveManifest(base, host)
-  return hostManifest && resolveManifest(dirname(hostManifest), 'oxlint')
+  if (!hostManifest) {
+    return undefined
+  }
+  const manifest = JSON.parse(await readFile(hostManifest, 'utf8')) as {
+    dependencies?: Record<string, string>
+    optionalDependencies?: Record<string, string>
+    peerDependencies?: Record<string, string>
+  }
+  // Node also searches ancestor node_modules, which may contain an unrelated project copy.
+  if (
+    !manifest.dependencies?.oxlint &&
+    !manifest.optionalDependencies?.oxlint &&
+    !manifest.peerDependencies?.oxlint
+  ) {
+    return undefined
+  }
+  return resolveManifest(dirname(hostManifest), 'oxlint')
 }
 
 function resolveManifest(base: string, name: string): string | undefined {

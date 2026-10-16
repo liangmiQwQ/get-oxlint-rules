@@ -59,6 +59,21 @@ it('throws instead of using oxlint on PATH when the `via` package is missing', a
   )
 })
 
+it('throws when the `via` package does not declare the project oxlint as a dependency', async () => {
+  const project = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-via-'))
+  await mkdir(join(project, 'node_modules/host-without-oxlint'), { recursive: true })
+  await writeFile(join(project, 'package.json'), '{}')
+  await writeFile(
+    join(project, 'node_modules/host-without-oxlint/package.json'),
+    JSON.stringify({ name: 'host-without-oxlint', version: '1.0.0' })
+  )
+  await symlink(await realpath('node_modules/oxlint'), join(project, 'node_modules/oxlint'))
+
+  await expect(
+    getRules({ cwd: project, via: 'host-without-oxlint', cacheDir: join(project, '.cache') })
+  ).rejects.toThrow('Cannot find oxlint through "host-without-oxlint"')
+})
+
 it('lists built-in plugins with the names used in the `plugins` config field', async () => {
   const cacheDir = await mkdtemp(join(tmpdir(), 'get-oxlint-rules-'))
 
