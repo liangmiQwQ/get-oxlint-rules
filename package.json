@@ -33,7 +33,7 @@
     "test": "vp run ctest"
   },
   "dependencies": {
-    "find-cache-dir": "catalog:",
+    "find-cache-directory": "catalog:",
     "tinyexec": "catalog:"
   },
   "devDependencies": {
