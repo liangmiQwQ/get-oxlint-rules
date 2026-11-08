@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
-import findCacheDirectory from 'find-cache-dir'
+import findCacheDirectory from 'find-cache-directory'
 
 const memory = new Map<string, unknown>()
 
@@ -31,7 +31,7 @@ function resolveCacheDir(options: CacheOptions): string {
   if (options.cacheDir) {
     return options.cacheDir
   }
-  // `find-cache-dir` returns undefined without a package.json or a writable node_modules, so fall back to the OS temp dir.
+  // `find-cache-directory` returns undefined without a package.json or a writable node_modules, so fall back to the OS temp dir.
   return (
     findCacheDirectory({ name: 'get-oxlint-rules', cwd: options.cwd }) ??
     join(tmpdir(), 'get-oxlint-rules')
